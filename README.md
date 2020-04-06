@@ -14,12 +14,16 @@ requirements:
     pip install pywin32
 
 current_file_extractor.py
+  
   what the script do is to find the current selected file in files explorer window in windows 
   and then he try to extract the file with 7zip. 
   instead of : 
+  
   right click > extract files > extract 
   
  hot_keys.py
+  
   the script just bind for your hot keys and when you hit them ( when you select the file )
+  
   the script execute current_file_extractor.py
  
