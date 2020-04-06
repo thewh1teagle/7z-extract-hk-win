@@ -112,5 +112,32 @@ def explorer_fileselection():
         for file in range(selected_files.Count):
             files.append(selected_files.Item(file).Path)
         if len(files) == 1:
-            return files[0]
+            file = files[0]
+            return file
 
+
+
+
+def try_to_get_file():
+    file = None
+    for _ in range(5):
+        file = explorer_fileselection()
+        print(file)
+        if file:
+            break
+    if file:
+        return file
+    
+
+def extract_file(path):
+    directory = os.path.dirname(os.path.abspath(path))
+    os.chdir(directory)
+    command = r""" "C:/Program Files/7-Zip/7zG.exe" """ + "e " + path 
+    print(command)
+    os.system(command)
+
+
+if __name__ == "__main__":
+    file = try_to_get_file()
+    if file:
+        extract_file(file)
