@@ -66,48 +66,10 @@ def searchChildWindows(currentHwnd,
 
 def explorer_fileselection():
     global clsid
-    address_1=""
     files = []
     shellwindows = win32.Dispatch(clsid)
-    w=win32gui
-    window = w.GetForegroundWindow()
-    #print("window: %s" % window)
-    if (window != 0):
-        if (w.GetClassName(window) == 'CabinetWClass'): # the main explorer window
-            #print("class: %s" % w.GetClassName(window))
-            #print("text: %s " %w.GetWindowText(window))
-            children = list(set(searchChildWindows(window)))
-            addr_edit = None
-            file_view = None
-            for child in children:
-                if (w.GetClassName(child) == 'WorkerW'): # the address bar
-                    addr_children = list(set(searchChildWindows(child)))
-                    for addr_child in addr_children:
-                        if (w.GetClassName(addr_child) == 'ReBarWindow32'):
-                            addr_edit = addr_child
-                            addr_children = list(set(searchChildWindows(child)))
-                            for addr_child in addr_children:
-                                if (w.GetClassName(addr_child) == 'Address Band Root'):
-                                    addr_edit = addr_child
-                                    addr_children = list(set(searchChildWindows(child)))
-                                    for addr_child in addr_children:
-                                        if (w.GetClassName(addr_child) == 'msctls_progress32'):
-                                            addr_edit = addr_child
-                                            addr_children = list(set(searchChildWindows(child)))
-                                            for addr_child in addr_children:
-                                                if (w.GetClassName(addr_child) == 'Breadcrumb Parent'):
-                                                    addr_edit = addr_child
-                                                    addr_children = list(set(searchChildWindows(child)))
-                                                    for addr_child in addr_children:
-                                                        if (w.GetClassName(addr_child) == 'ToolbarWindow32'):
-                                                            text=getEditText(addr_child)
-                                                            if "\\" in text:
-                                                                address_1=getEditText(addr_child)[text.index(" ")+1:]
-                                                                print("Address --> "+address_1)
-
+    window = win32gui.GetForegroundWindow()
     for window in range(shellwindows.Count):
-        window_URL = urllib.parse.unquote(shellwindows[window].LocationURL,encoding='ISO 8859-1')
-        window_dir = window_URL.split("///")[1].replace("/", "\\")
         selected_files = shellwindows[window].Document.SelectedItems()
         for file in range(selected_files.Count):
             files.append(selected_files.Item(file).Path)
@@ -132,7 +94,7 @@ def try_to_get_file():
 def extract_file(path):
     directory = os.path.dirname(os.path.abspath(path))
     os.chdir(directory)
-    command = r""" "C:/Program Files/7-Zip/7zG.exe" """ + "e " + path 
+    command = r""" "C:/Program Files/7-Zip/7zG.exe" """  +  "e " +  path 
     print(command)
     os.system(command)
 
