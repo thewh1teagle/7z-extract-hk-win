@@ -13,59 +13,9 @@ import subprocess
 import time
 import urllib.parse
 
-clsid = '{9BA05972-F6A8-11CF-A442-00A0C90A8F39}' #Valid for IE as well!
-
-def getEditText(hwnd):
-    # api returns 16 bit characters so buffer needs 1 more char for null and twice the num of chars
-    buf_size = (win32gui.SendMessage(hwnd, WM_GETTEXTLENGTH, 0, 0) +1 ) * 2
-    target_buff = ctypes.create_string_buffer(buf_size)
-    win32gui.SendMessage(hwnd, WM_GETTEXT, buf_size, ctypes.addressof(target_buff))
-    return target_buff.raw.decode('utf16')[:-1]# remove the null char on the end
-
-def _normaliseText(controlText):
-    '''Remove '&' characters, and lower case.
-    Useful for matching control text.'''
-    return controlText.lower().replace('&', '')
-
-def _windowEnumerationHandler(hwnd, resultList):
-    '''Pass to win32gui.EnumWindows() to generate list of window handle,
-    window text, window class tuples.'''
-    resultList.append((hwnd, win32gui.GetWindowText(hwnd), win32gui.GetClassName(hwnd)))
-
-def searchChildWindows(currentHwnd,
-               wantedText=None,
-               wantedClass=None,
-               selectionFunction=None):
-    results = []
-    childWindows = []
-    try:
-        win32gui.EnumChildWindows(currentHwnd,
-                      _windowEnumerationHandler,
-                      childWindows)
-    except win32gui.error:
-        # This seems to mean that the control *cannot* have child windows,
-        # i.e. not a container.
-        return
-    for childHwnd, windowText, windowClass in childWindows:
-        descendentMatchingHwnds = searchChildWindows(childHwnd)
-        if descendentMatchingHwnds:
-            results += descendentMatchingHwnds
-
-        if wantedText and \
-            not _normaliseText(wantedText) in _normaliseText(windowText):
-                continue
-        if wantedClass and \
-            not windowClass == wantedClass:
-                continue
-        if selectionFunction and \
-            not selectionFunction(childHwnd):
-                continue
-        results.append(childHwnd)
-    return results
-
 
 def explorer_fileselection():
-    global clsid
+    clsid = '{9BA05972-F6A8-11CF-A442-00A0C90A8F39}' #Valid for IE as well!
     files = []
     shellwindows = win32.Dispatch(clsid)
     window = win32gui.GetForegroundWindow()
@@ -76,8 +26,6 @@ def explorer_fileselection():
         if len(files) == 1:
             file = files[0]
             return file
-
-
 
 
 def try_to_get_file():
