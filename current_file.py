@@ -13,8 +13,6 @@ import subprocess
 import time
 import urllib.parse
 
-import pyhk
-
 clsid = '{9BA05972-F6A8-11CF-A442-00A0C90A8F39}' #Valid for IE as well!
 
 def getEditText(hwnd):
@@ -65,13 +63,11 @@ def searchChildWindows(currentHwnd,
         results.append(childHwnd)
     return results
 
-import pythoncom
 
-def get_selected_file():
+def explorer_fileselection():
     global clsid
     address_1=""
     files = []
-    pythoncom.CoInitialize()
     shellwindows = win32.Dispatch(clsid)
     w=win32gui
     window = w.GetForegroundWindow()
@@ -107,46 +103,14 @@ def get_selected_file():
                                                             text=getEditText(addr_child)
                                                             if "\\" in text:
                                                                 address_1=getEditText(addr_child)[text.index(" ")+1:]
-                                                                # print("Address --> "+address_1)
+                                                                print("Address --> "+address_1)
 
     for window in range(shellwindows.Count):
         window_URL = urllib.parse.unquote(shellwindows[window].LocationURL,encoding='ISO 8859-1')
         window_dir = window_URL.split("///")[1].replace("/", "\\")
-        # print("Directory --> "+window_dir)
-        if window_dir==address_1:
-            selected_files = shellwindows[window].Document.SelectedItems()
-            for file in range(selected_files.Count):
-                files.append(selected_files.Item(file).Path)
-            if len(files) > 1:
-                return
-            else:
-                return files[0]
+        selected_files = shellwindows[window].Document.SelectedItems()
+        for file in range(selected_files.Count):
+            files.append(selected_files.Item(file).Path)
+        if len(files) == 1:
+            return files[0]
 
-
-
-
-def try_to_get_file():
-    file = None
-    for _ in range(5):
-        file = get_selected_file()
-        print(file)
-        if file:
-            break
-    if file:
-        return file
-    
-
-def extract_file(path):
-    os.system(r""" "C:/Program Files/7-Zip/7zG.exe" """ + "a " + path )
-
-
-if __name__ == "__main__":
-    try:
-        file = try_to_get_file()
-        if file:
-            print(file)
-            extract_file(file)    
-        else:
-            print("none")        
-    except:
-        print("None")
