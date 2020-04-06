@@ -5,6 +5,7 @@ Enable hot key for fast extraction of files in windows with 7zip program
 
 requirements:
   python3 https://www.python.org
+  
   7zip https://www.7-zip.org/download.html
   
   keyboard module:
