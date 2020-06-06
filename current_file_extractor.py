@@ -1,4 +1,3 @@
-import win32
 import win32gui
 import os
 import win32com.client as win32
